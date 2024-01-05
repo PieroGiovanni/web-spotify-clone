@@ -1,5 +1,5 @@
+import type { Playlist } from "../types";
 import { colors } from "./colors";
-import type { Playlist, Song } from "./types";
 
 export const playlists: Playlist[] = [
   {

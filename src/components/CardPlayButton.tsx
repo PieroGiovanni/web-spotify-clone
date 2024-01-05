@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import type { ApiResponse } from "../lib/types";
 import { usePlayerStore } from "../store/playerStore";
 import { Pause, Play } from "./Player";
 
