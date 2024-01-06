@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { usePlayerStore } from "../store/playerStore";
 import { Slider } from "./Slider";
 import type { Song } from "../types";
@@ -91,7 +91,7 @@ const VolumeControl = () => {
         {volume > 0 ? <VolumeHigh /> : <VolumeOff />}
       </button>
       <Slider
-        // defaultValue={[volume]}
+        defaultValue={[volume * 100]}
         max={100}
         min={0}
         value={[volume * 100]}
@@ -103,6 +103,52 @@ const VolumeControl = () => {
           previousVolume.current = newVolume;
         }}
       />
+    </div>
+  );
+};
+
+const SongControl = ({ audio }: { audio: RefObject<HTMLAudioElement> }) => {
+  const [currentTime, setCurrentTime] = useState<number | undefined>(0);
+  useEffect(() => {
+    audio.current?.addEventListener("timeupdate", handleTimeUpdate);
+    return () => {
+      audio.current?.removeEventListener("timeupdate", handleTimeUpdate);
+    };
+  });
+
+  const handleTimeUpdate = () => {
+    setCurrentTime(audio.current?.currentTime);
+  };
+
+  const formatTime = (time: number | undefined) => {
+    if (time === undefined || time === null) return "0:00";
+    const secs = Math.floor(time % 60);
+    const mins = Math.floor(time / 60);
+
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const duration = audio.current?.duration ?? 0;
+
+  return (
+    <div className="flex gap-x-3 text-xs">
+      <span className="opacity-50 w-12 text-right">
+        {formatTime(currentTime)}
+      </span>
+      <Slider
+        defaultValue={[0]}
+        max={audio.current?.duration ?? 0}
+        min={0}
+        value={[currentTime ?? 0]}
+        className="w-[400px]"
+        onValueChange={(value) => {
+          const [newCurrentTime] = value;
+          audio.current!.currentTime = newCurrentTime;
+        }}
+      />
+      <span className="opacity-50 w-12">
+        {duration ? formatTime(duration) : "0:00"}
+      </span>
     </div>
   );
 };
@@ -139,17 +185,21 @@ export function Player() {
   };
 
   return (
-    <div className="flex flex-row justify-between w-full px-4 z-50">
-      <CurrentSong {...currentMusic.song!} />
+    <div className="flex flex-row justify-between w-full px-2 z-50">
+      <div className="w-[280px]">
+        <CurrentSong {...currentMusic.song!} />
+      </div>
       <div className="grid place-content-center gap-4 flex-1">
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center flex-col gap-2">
           <button className="bg-white rounded-full p-2" onClick={handleClick}>
             {isPlaying ? <Pause /> : <Play />}
           </button>
+          <SongControl audio={audioRef} />
         </div>
       </div>
-      <div className="grid place-content-center"></div>
-      <VolumeControl />
+      <div className="grid place-content-center">
+        <VolumeControl />
+      </div>
       <audio ref={audioRef} />
     </div>
   );
