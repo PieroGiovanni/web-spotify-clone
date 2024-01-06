@@ -3,9 +3,10 @@ import { Pause, Play } from "./Player";
 
 interface CardPlayButtonProps {
   id: string;
+  size: "small" | "large";
 }
 
-export function CardPlayButton({ id }: CardPlayButtonProps) {
+export function CardPlayButton({ id, size = "small" }: CardPlayButtonProps) {
   const { currentMusic, isPlaying, setIsPlaying, setCurrentMusic } =
     usePlayerStore((state) => state);
 
@@ -24,12 +25,18 @@ export function CardPlayButton({ id }: CardPlayButtonProps) {
     setCurrentMusic({ songs, song: songs[0], playlist });
   };
 
+  const iconClassName = size === "small" ? "size-4" : "size-5";
+
   return (
     <button
       onClick={handleClick}
-      className="card-play-button rounded-full bg-green-500 p-4"
+      className="card-play-button rounded-full bg-green-500 p-4 hover:scale-105 transition hover:bg-green-400"
     >
-      {isPlayingPlaylist ? <Pause /> : <Play />}
+      {isPlayingPlaylist ? (
+        <Pause className={iconClassName} />
+      ) : (
+        <Play className={iconClassName} />
+      )}
     </button>
   );
 }

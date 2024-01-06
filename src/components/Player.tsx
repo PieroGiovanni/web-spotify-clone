@@ -3,8 +3,9 @@ import { usePlayerStore } from "../store/playerStore";
 import { Slider } from "./Slider";
 import type { Song } from "../types";
 
-export const Pause = () => (
+export const Pause = ({ className }: { className?: string }) => (
   <svg
+    className={className}
     data-encore-id="icon"
     height="16"
     width="16"
@@ -16,8 +17,9 @@ export const Pause = () => (
   </svg>
 );
 
-export const Play = () => (
+export const Play = ({ className }: { className?: string }) => (
   <svg
+    className={className}
     data-encore-id="icon"
     role="img"
     height="16"
